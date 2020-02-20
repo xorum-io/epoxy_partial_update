@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
 
     internal data class PhraseEpoxyModel(
         private val phrase: Phrase,
-        private val isTranslationDisplayed: Boolean
+        private var isTranslationDisplayed: Boolean
     ) : EpoxyModel<View>() {
 
         init {
@@ -80,6 +80,11 @@ class MainActivity : AppCompatActivity() {
             view.original.text = phrase.original
             view.translation.text = phrase.translation
             updateTranslationVisibility(view)
+
+            view.setOnClickListener {
+                isTranslationDisplayed = true
+                updateTranslationVisibility(view)
+            }
         }
 
         override fun bind(view: View, previouslyBoundModel: EpoxyModel<*>) {
@@ -102,6 +107,7 @@ class MainActivity : AppCompatActivity() {
             view.original.text = ""
             view.translation.text = ""
             view.translation.visibility = View.INVISIBLE
+            view.setOnClickListener(null)
         }
     }
 }
