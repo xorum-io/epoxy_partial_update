@@ -2,7 +2,6 @@ package io.xorum.epoxypartialupdate
 
 import android.os.Bundle
 import android.view.View
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyController
@@ -32,8 +31,12 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            controller.isTranslationDisplayed = !controller.isTranslationDisplayed
+            if (controller.isTranslationDisplayed) {
+                fab.setImageResource(R.drawable.ic_hide)
+            } else {
+                fab.setImageResource(R.drawable.ic_reveal)
+            }
         }
     }
 
@@ -47,19 +50,26 @@ class MainActivity : AppCompatActivity() {
                 requestModelBuild()
             }
 
+        var isTranslationDisplayed = false
+            set(value) {
+                field = value
+                requestModelBuild()
+            }
+
         override fun buildModels() {
             phrases?.forEach {
-                PhraseEpoxyModel(it).addTo(this)
+                PhraseEpoxyModel(it, isTranslationDisplayed).addTo(this)
             }
         }
     }
 
     internal class PhraseEpoxyModel(
-        private val phrase: Phrase
+        private val phrase: Phrase,
+        private val isTranslationDisplayed: Boolean
     ) : EpoxyModel<View>() {
 
         init {
-            id("PhraseEpoxyModel - $phrase")
+            id("PhraseEpoxyModel - $phrase $isTranslationDisplayed")
         }
 
         override fun getDefaultLayout() = R.layout.view_item_phrase
@@ -69,6 +79,11 @@ class MainActivity : AppCompatActivity() {
 
             view.original.text = phrase.original
             view.translation.text = phrase.translation
+            view.translation.visibility = if (isTranslationDisplayed) {
+                View.VISIBLE
+            }else  {
+                View.INVISIBLE
+            }
         }
 
         override fun unbind(view: View) {
@@ -76,6 +91,7 @@ class MainActivity : AppCompatActivity() {
 
             view.original.text = ""
             view.translation.text = ""
+            view.translation.visibility = View.INVISIBLE
         }
     }
 }
