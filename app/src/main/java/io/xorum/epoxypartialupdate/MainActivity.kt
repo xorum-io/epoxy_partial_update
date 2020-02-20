@@ -63,13 +63,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    internal class PhraseEpoxyModel(
+    internal data class PhraseEpoxyModel(
         private val phrase: Phrase,
         private val isTranslationDisplayed: Boolean
     ) : EpoxyModel<View>() {
 
         init {
-            id("PhraseEpoxyModel - $phrase $isTranslationDisplayed")
+            id("PhraseEpoxyModel - $phrase")
         }
 
         override fun getDefaultLayout() = R.layout.view_item_phrase
@@ -79,6 +79,16 @@ class MainActivity : AppCompatActivity() {
 
             view.original.text = phrase.original
             view.translation.text = phrase.translation
+            updateTranslationVisibility(view)
+        }
+
+        override fun bind(view: View, previouslyBoundModel: EpoxyModel<*>) {
+            super.bind(view, previouslyBoundModel)
+
+            updateTranslationVisibility(view)
+        }
+
+        private fun updateTranslationVisibility(view: View) {
             view.translation.visibility = if (isTranslationDisplayed) {
                 View.VISIBLE
             }else  {
